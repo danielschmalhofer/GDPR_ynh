@@ -2,18 +2,19 @@
 	"name": "Multi custom webapp",
 	"id": "multi_webapp",
 	"packaging_format": 1,
-	"requirements": {
-		"yunohost": ">= 2.4"
-	},
 	"description": {
 		"en": "Empty App without FTP access",
 		"fr": "App vide sans accès FTP"
 	},
+	"version": "1.0",
 	"url": "https://github.com/YunoHost-Apps/multi_webapp_ynh",
-	"license": "free",
+	"license": "GPL-v3",
 	"maintainer": {
 		"name": "Maniack Crudelis",
 		"email": "maniackc_dev@crudelis.fr"
+	},
+	"requirements": {
+        "yunohost": ">= 2.7.2"
 	},
 	"multi_instance": true,
 	"services": [
