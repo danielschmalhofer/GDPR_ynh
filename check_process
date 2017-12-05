@@ -1,5 +1,4 @@
 ;; Test complet avec bdd
-	auto_remove=1
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -14,13 +13,13 @@
 		setup_private=1
 		setup_public=1
 		upgrade=1
+		upgrade=1	from_commit=34cc32c093c590f5e9e59a61cc7dc6ffdb49b64f
 		backup_restore=1
 		multi_instance=1
 		incorrect_path=1
 		port_already_use=0
 		change_url=1
 ;; Test sans bdd
-	auto_remove=1
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -46,7 +45,8 @@
 # Level 4: Pas de gestion des utilisateurs
 	Level 4=na
 # Level 5: https://github.com/YunoHost-Apps/multi_webapp_ynh/issues/9
-	Level 5=1
+# 	Level 5=1
+	Level 5=auto
 	Level 6=auto
 	Level 7=auto
 	Level 8=0
@@ -55,3 +55,7 @@
 ;;; Options
 Email=
 Notification=down
+;;; Upgrade options
+	; commit=34cc32c093c590f5e9e59a61cc7dc6ffdb49b64f
+		name=20 Jan 2017 34cc32c093c590f5e9e59a61cc7dc6ffdb49b64f
+		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&sql=1&is_public=1&

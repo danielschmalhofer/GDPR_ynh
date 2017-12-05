@@ -32,12 +32,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 
 parent_dir=/var/www/webapp_$admin
-if [ $path_url = "/" ]
-then
-	directory=${domain//-/_}
-else
-	directory=$(echo $path_url | cut -d '/' -f 2)
-fi
+directory="${domain//-/_}_$(echo $path_url | cut -d '/' -f 2)"
 appname=webapp_$directory
 final_path=$parent_dir/$directory
 # Pour cette application, app correspond au label, comme d'habitude. Mais pas au nom de l'application. appname contient le nom de l'application, dérivé du path.
@@ -167,8 +162,6 @@ cp ../conf/nginx.conf "$finalnginxconf"
 ynh_replace_string "__PATH__" "$path_url" "$finalnginxconf"
 ynh_replace_string "__FINALPATH__" "$final_path" "$finalnginxconf"
 ynh_replace_string "__APPNAME__" "$appname" "$finalnginxconf"
-
-systemctl reload nginx
 
 #=================================================
 # GENERIC FINALISATION

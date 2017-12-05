@@ -13,8 +13,6 @@ if [ ! -e _common.sh ]; then
 fi
 source _common.sh
 source /usr/share/yunohost/helpers
-# Load common variables for all scripts.
-source ../settings/scripts/_variables
 
 #=================================================
 # MANAGE SCRIPT FAILURE
