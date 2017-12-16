@@ -20,6 +20,12 @@ appname=$(ynh_app_setting_get $app appname)
 db_name=$(ynh_app_setting_get $app db_name)
 
 #=================================================
+# CHECK VERSION
+#=================================================
+
+ynh_abort_if_up_to_date
+
+#=================================================
 # FIX OLD THINGS
 #=================================================
 

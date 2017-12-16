@@ -88,7 +88,7 @@ then	# Créer le dossier parent uniquement si il n'existe pas
 	chmod 755 -R $parent_dir
 	chown -R root: $parent_dir
 else
-	echo "Création du dossier $parent_dir ignorée, le dossier existe déjà."
+	ynh_print_info "Création du dossier $parent_dir ignorée, le dossier existe déjà." >&2
 fi
 
 # Copy files to the right place
@@ -113,7 +113,7 @@ fi
 # CREATE A SQL BDD
 #=================================================
 
-if [ $sql -eq 1 ];
+if [ $sql -eq 1 ]
 then
 	db_name=$(ynh_sanitize_dbid $appname)
 	ynh_app_setting_set $app db_name $db_name
@@ -177,3 +177,27 @@ chown -R $admin:$appname $final_path
 #=================================================
 
 systemctl reload nginx
+
+#=================================================
+# SEND A README FOR THE ADMIN
+#=================================================
+
+if [ "$sql" != "0" ]
+then
+	sql_infos="
+You ask for an database, please find here the informations about this SQL database.
+$(cat "$final_path/db_info.txt")
+"
+else
+	sql_infos=""
+fi
+
+message="This app is simply a blank web app container. You have to put your own app inside.
+$sql_infos
+Please put your files in this directory, $final_path
+
+You can find a standard nginx configuration in $finalnginxconf and a standard php config in $finalphpconf and $finalphpini
+
+If you facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/multi_webapp_ynh"
+
+ynh_send_readme_to_admin "$message" "$admin"
