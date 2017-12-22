@@ -20,6 +20,12 @@ appname=$(ynh_app_setting_get $app appname)
 db_name=$(ynh_app_setting_get $app db_name)
 
 #=================================================
+# CHECK VERSION
+#=================================================
+
+ynh_abort_if_up_to_date
+
+#=================================================
 # FIX OLD THINGS
 #=================================================
 
@@ -54,11 +60,14 @@ fi
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
 
-BACKUP_BEFORE_UPGRADE	# Backup the current version of the app
+# Backup the current version of the app
+ynh_backup_before_upgrade
 ynh_clean_setup () {
-	BACKUP_FAIL_UPGRADE	# restore it if the upgrade fails
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
 }
-ynh_abort_if_errors	# Active trap pour arrêter le script si une erreur est détectée.
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # SETUP SSOWAT

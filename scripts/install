@@ -31,25 +31,24 @@ app=$YNH_APP_INSTANCE_NAME
 # CHECK IF THE APP CAN BE INSTALLED WITH THIS ARGS
 #=================================================
 
-path_url=$(ynh_normalize_url_path $path_url)	# Vérifie et corrige la syntaxe du path.
-CHECK_DOMAINPATH	# Vérifie la disponibilité du path et du domaine.
-
 parent_dir=/var/www/webapp_$admin
-if [ $path_url = "/" ]
-then
-	directory=${domain//-/_}
-else
-	directory=$(echo $path_url | cut -d '/' -f 2)
-fi
+directory="${domain//-/_}_$(echo $path_url | cut -d '/' -f 2)"
 appname=webapp_$directory
 final_path=$parent_dir/$directory
 # Pour cette application, app correspond au label, comme d'habitude. Mais pas au nom de l'application. appname contient le nom de l'application, dérivé du path.
 # Vérifie que le dossier de destination n'est pas déjà utilisé.
 if [ -e "$final_path" ]
 then
-	echo "This path already contains a folder"
-	false
+	ynh_die "This path already contains a folder"
 fi
+
+# Normalize the url path syntax
+path_url=$(ynh_normalize_url_path $path_url)
+
+# Check web path availability
+ynh_webpath_available $domain $path_url
+# Register (book) web path
+ynh_webpath_register $app $domain $path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -84,17 +83,17 @@ fi
 # Créer le dossier parent des webapp pour l'utilisateur
 if test ! -d $parent_dir
 then	# Créer le dossier parent uniquement si il n'existe pas
-	sudo mkdir $parent_dir
+	mkdir $parent_dir
 	# Set permissions
-	sudo chmod 755 -R $parent_dir
-	sudo chown -R root: $parent_dir
+	chmod 755 -R $parent_dir
+	chown -R root: $parent_dir
 else
-	echo "Création du dossier $parent_dir ignorée, le dossier existe déjà."
+	ynh_print_info "Création du dossier $parent_dir ignorée, le dossier existe déjà." >&2
 fi
 
 # Copy files to the right place
-sudo mkdir -p $final_path
-sudo cp ../sources/index.html $final_path/
+mkdir -p $final_path
+cp ../sources/index.html $final_path/
 # Vérifie si pure-ftpd est déjà installé
 if test -f /usr/sbin/pure-ftpd-ldap
 then	# Si oui, vérifie si net2ftp est également installé.
@@ -106,7 +105,7 @@ then	# Si oui, vérifie si net2ftp est également installé.
 		ynh_replace_string "__HOST__" "$domain" ../sources/index_ftp.html
 		ynh_replace_string "__NET2FTP__" "$netftp_path" ../sources/index_ftp.html
 		ynh_replace_string "__PORT__" "$(cat /etc/pure-ftpd/conf/Bind)" ../sources/index_ftp.html
-		sudo cp ../sources/index_ftp.html $final_path/index.html	# Remplace l'index.html par celui intégrant les informations ftp
+		cp ../sources/index_ftp.html $final_path/index.html	# Remplace l'index.html par celui intégrant les informations ftp
 	fi
 fi
 
@@ -114,15 +113,15 @@ fi
 # CREATE A SQL BDD
 #=================================================
 
-if [ $sql -eq 1 ];
+if [ $sql -eq 1 ]
 then
 	db_name=$(ynh_sanitize_dbid $appname)
 	ynh_app_setting_set $app db_name $db_name
 	ynh_mysql_setup_db $db_name $db_name
-	echo "DB_NAME= $db_name" | sudo tee "$final_path/db_info.txt"
-	echo "DB_USER= $db_name" | sudo tee -a "$final_path/db_info.txt"
-	echo "DB_PASSWORD= $db_pwd" | sudo tee -a "$final_path/db_info.txt"
-	echo "DB_HOST= localhost" | sudo tee -a "$final_path/db_info.txt"
+	echo "DB_NAME= $db_name" | tee "$final_path/db_info.txt"
+	echo "DB_USER= $db_name" | tee -a "$final_path/db_info.txt"
+	echo "DB_PASSWORD= $db_pwd" | tee -a "$final_path/db_info.txt"
+	echo "DB_HOST= localhost" | tee -a "$final_path/db_info.txt"
 fi
 
 #=================================================
@@ -137,19 +136,19 @@ ynh_system_user_create $appname	# Créer un utilisateur système dédié à l'ap
 
 # En raison de l'usage de $appname, il n'est pas possible d'utiliser ynh_fpm_config
 finalphpconf="/etc/php5/fpm/pool.d/$appname.conf"
-sudo cp ../conf/php-fpm.conf "$finalphpconf"
+cp ../conf/php-fpm.conf "$finalphpconf"
 
 ynh_replace_string "__NAMETOCHANGE__" "$appname" "$finalphpconf"
 ynh_replace_string "__FINALPATH__" "$final_path" "$finalphpconf"
 ynh_replace_string "__USER__" "$appname" "$finalphpconf"
 
-sudo chown root: "$finalphpconf"
+chown root: "$finalphpconf"
 
 finalphpini="/etc/php5/fpm/conf.d/20-$appname.ini"
-sudo cp ../conf/php-fpm.ini "$finalphpini"
-sudo chown root: "$finalphpini"
+cp ../conf/php-fpm.ini "$finalphpini"
+chown root: "$finalphpini"
 
-sudo systemctl reload php5-fpm
+systemctl reload php5-fpm
 
 #=================================================
 # NGINX CONFIGURATION
@@ -158,13 +157,11 @@ sudo systemctl reload php5-fpm
 # En raison de l'usage de $appname, il n'est pas possible d'utiliser ynh_nginx_config
 
 finalnginxconf="/etc/nginx/conf.d/$domain.d/$appname.conf"
-sudo cp ../conf/nginx.conf "$finalnginxconf"
+cp ../conf/nginx.conf "$finalnginxconf"
 
 ynh_replace_string "__PATH__" "$path_url" "$finalnginxconf"
 ynh_replace_string "__FINALPATH__" "$final_path" "$finalnginxconf"
 ynh_replace_string "__APPNAME__" "$appname" "$finalnginxconf"
-
-sudo systemctl reload nginx
 
 #=================================================
 # GENERIC FINALISATION
@@ -172,11 +169,35 @@ sudo systemctl reload nginx
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
-sudo chmod 775 -R $final_path
-sudo chown -R $admin:$appname $final_path
+chmod 775 -R $final_path
+chown -R $admin:$appname $final_path
 
 #=================================================
 # RELOAD NGINX
 #=================================================
 
-sudo systemctl reload nginx
+systemctl reload nginx
+
+#=================================================
+# SEND A README FOR THE ADMIN
+#=================================================
+
+if [ "$sql" != "0" ]
+then
+	sql_infos="
+You ask for an database, please find here the informations about this SQL database.
+$(cat "$final_path/db_info.txt")
+"
+else
+	sql_infos=""
+fi
+
+message="This app is simply a blank web app container. You have to put your own app inside.
+$sql_infos
+Please put your files in this directory, $final_path
+
+You can find a standard nginx configuration in $finalnginxconf and a standard php config in $finalphpconf and $finalphpini
+
+If you facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/multi_webapp_ynh"
+
+ynh_send_readme_to_admin "$message" "$admin"
