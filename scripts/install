@@ -159,6 +159,11 @@ systemctl reload php5-fpm
 finalnginxconf="/etc/nginx/conf.d/$domain.d/$appname.conf"
 cp ../conf/nginx.conf "$finalnginxconf"
 
+if [ "$path_url" != "/" ]
+then
+	ynh_replace_string "^#sub_path_only" "" "$finalnginxconf"
+fi
+ynh_replace_string "__PATH__/" "${path_url%/}/" "$finalnginxconf"
 ynh_replace_string "__PATH__" "$path_url" "$finalnginxconf"
 ynh_replace_string "__FINALPATH__" "$final_path" "$finalnginxconf"
 ynh_replace_string "__APPNAME__" "$appname" "$finalnginxconf"
