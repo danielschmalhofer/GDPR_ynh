@@ -343,6 +343,23 @@ ynh_exec_fully_quiet () {
 	eval $@ > /dev/null 2>&1
 }
 
+# Remove any logs for all the following commands.
+#
+# usage: ynh_print_OFF
+# WARNING: You should be careful with this helper, and never forgot to use ynh_print_ON as soon as possible to restore the logging.
+ynh_print_OFF () {
+	set +x
+}
+
+# Restore the logging after ynh_print_OFF
+#
+# usage: ynh_print_ON
+ynh_print_ON () {
+	set -x
+	# Print an echo only for the log, to be able to know that ynh_print_ON has been called.
+	echo ynh_print_ON > /dev/null
+}
+
 #=================================================
 
 # Install or update the main directory yunohost.multimedia
@@ -437,6 +454,11 @@ EOF
 	ynh_store_file_checksum "$finalfail2banfilterconf"
 
 	sudo systemctl restart fail2ban
+	if local fail2ban_error="$(tail -n50 /var/log/fail2ban.log | grep "WARNING Command.*$app.*addfailregex")"
+	then
+		echo "[ERR] Fail2ban fail to load the jail for $app" >&2
+		echo "WARNING${fail2ban_error#*WARNING}" >&2
+	fi
 }
 
 # Remove the dedicated fail2ban config (jail and filter conf files)
