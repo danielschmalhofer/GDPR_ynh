@@ -148,7 +148,7 @@ finalphpini="/etc/php5/fpm/conf.d/20-$appname.ini"
 cp ../conf/php-fpm.ini "$finalphpini"
 chown root: "$finalphpini"
 
-systemctl reload php5-fpm
+ynh_system_reload php5-fpm
 
 #=================================================
 # NGINX CONFIGURATION
@@ -181,7 +181,7 @@ chown -R $admin:$appname $final_path
 # RELOAD NGINX
 #=================================================
 
-systemctl reload nginx
+ynh_system_reload nginx
 
 #=================================================
 # SEND A README FOR THE ADMIN
