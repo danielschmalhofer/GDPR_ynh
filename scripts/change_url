@@ -110,4 +110,4 @@ fi
 # RELOAD NGINX
 #=================================================
 
-sudo systemctl reload nginx
+ynh_system_reload nginx
