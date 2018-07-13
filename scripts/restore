@@ -6,12 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-if [ ! -e _common.sh ]; then
-	# Get the _common.sh file if it's not in the current directory
-	cp ../settings/scripts/_common.sh ./_common.sh
-	chmod a+rx _common.sh
-fi
-source _common.sh
+source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -43,6 +38,12 @@ ynh_webpath_available $domain $path_url \
 	|| ynh_die "Path not available: ${domain}${path_url}"
 test ! -d $final_path \
 	|| ynh_die "There is already a directory: $final_path "
+
+#=================================================
+# ACTIVATE MAINTENANCE MODE
+#=================================================
+
+ynh_maintenance_mode_ON
 
 #=================================================
 # STANDARD RESTORE STEPS
@@ -101,5 +102,11 @@ ynh_restore_file "/etc/php5/fpm/conf.d/20-$appname.ini"
 # RELOAD NGINX AND PHP-FPM
 #=================================================
 
-ynh_system_reload php5-fpm
-ynh_system_reload nginx
+ynh_system_reload --service_name=php5-fpm
+ynh_system_reload --service_name=nginx
+
+#=================================================
+# DEACTIVE MAINTENANCE MODE
+#=================================================
+
+ynh_maintenance_mode_OFF

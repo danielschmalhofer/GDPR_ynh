@@ -1,6 +1,6 @@
 # Multi webapp for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/multi_webapp.svg)](https://ci-apps.yunohost.org/jenkins/job/multi_webapp%20%28Community%29/lastBuild/consoleFull)  
+[![Integration level](https://dash.yunohost.org/integration/multi_webapp.svg)](https://dash.yunohost.org/appci/app/multi_webapp)  
 [![Install Multi webapp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=multi_webapp)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -17,6 +17,10 @@ This application can be installed a multiple times.
 
 ## Screenshots
 
+## Demo
+
+No demo available.
+
 ## Configuration
 
 ## Documentation
@@ -30,7 +34,8 @@ This application can be installed a multiple times.
 #### Supported architectures
 
 * x86-64b - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/multi_webapp%20(Community)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/multi_webapp%20(Community)/)
-* ARMv8-A - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/multi_webapp%20(Community)%20(%7EARM%7E)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/multi_webapp%20(Community)%20(%7EARM%7E)/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/jenkins/job/multi_webapp%20(Community)%20(%7EARM%7E)/badge/icon)](https://ci-apps-arm.yunohost.org/jenkins/job/multi_webapp%20(Community)%20(%7EARM%7E)/)
+* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/jenkins/job/multi_webapp%20(Community)/badge/icon)](https://ci-stretch.nohost.me/jenkins/job/multi_webapp%20(Community)/)
 
 ## Limitations
 
