@@ -148,7 +148,7 @@ finalphpini="/etc/php5/fpm/conf.d/20-$appname.ini"
 cp ../conf/php-fpm.ini "$finalphpini"
 chown root: "$finalphpini"
 
-ynh_system_reload php5-fpm
+ynh_system_reload --service_name=php5-fpm
 
 #=================================================
 # NGINX CONFIGURATION
@@ -181,7 +181,7 @@ chown -R $admin:$appname $final_path
 # RELOAD NGINX
 #=================================================
 
-ynh_system_reload nginx
+ynh_system_reload --service_name=nginx
 
 #=================================================
 # SEND A README FOR THE ADMIN
@@ -205,4 +205,4 @@ You can find a standard nginx configuration in $finalnginxconf and a standard ph
 
 If you facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/multi_webapp_ynh"
 
-ynh_send_readme_to_admin "$message" "$admin"
+ynh_send_readme_to_admin --app_message="$message" --recipients="$admin"
