@@ -1,0 +1,19 @@
+{
+	"name": "multi_webapp configuration panel",
+	"version": "0.1",
+	"panel": [{
+		"name": "multi_webapp configuration",
+		"id": "main",
+		"sections": [{
+			"name": "Public access",
+			"id": "is_public",
+			"options": [{
+				"name": "Is it a public app ?",
+				"id": "is_public",
+				"type": "bool",
+				"default": true
+			}]
+		}]
+	}
+]
+}
