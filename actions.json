@@ -1,0 +1,38 @@
+[{
+		"id": "create_database",
+		"name": "Create a database",
+		"command": "/bin/bash scripts/actions/create_database",
+		"user": "root",
+		"accepted_return_codes": [0],
+		"description": {
+			"en": "Create a database or replace a previous one.",
+			"fr": "Créer une base de donnée ou remplace la précédente."
+		}
+},
+{
+		"id": "remove_database",
+		"name": "Remove the database",
+		"command": "/bin/bash scripts/actions/remove_database",
+		"user": "root",
+		"accepted_return_codes": [0]
+},
+{
+		"id": "public_private",
+		"name": "Move to public or private",
+		"command": "/bin/bash scripts/actions/public_private",
+		"user": "root",
+		"accepted_return_codes": [0],
+		"description": {
+			"en": "Change the public access of the app."
+		},
+		"arguments": [
+			{
+				"name": "is_public",
+				"type": "boolean",
+				"ask": {
+					"en": "Is it a public app ?"
+				},
+				"default": true
+			}
+		]
+}]
