@@ -26,33 +26,38 @@ parent_dir=$(ynh_app_setting_get $app parent_dir)
 #=================================================
 # STANDARD REMOVE
 #=================================================
-# REMOVE THE SQL BDD
+# REMOVE THE MYSQL DATABASE
 #=================================================
 
 if [ "$sql" -eq "1" ];
 then
 	db_name=$(ynh_app_setting_get $app db_name)
-	ynh_mysql_remove_db $db_name $db_name	# Suppression de la base de donnée et de l'utilisateur associé.
+	# Remove a database if it exists, along with the associated user
+	ynh_mysql_remove_db $db_name $db_name
 fi
 
 #=================================================
-# REMOVE THE MAIN DIR OF THE APP
+# REMOVE APP MAIN DIR
 #=================================================
 
-ynh_secure_remove "$final_path"	# Suppression du dossier de la webapp
+# Remove the app directory securely
+ynh_secure_remove "$final_path"
 
 #=================================================
-# REMOVE THE NGINX CONFIGURATION
+# REMOVE NGINX CONFIGURATION
 #=================================================
 
-app=$appname	# Utilise appname pour FPM et nginx
-ynh_remove_nginx_config	# Suppression de la configuration nginx
+# Use appname for FPM and nginx
+app=$appname
+# Remove the dedicated nginx config
+ynh_remove_nginx_config
 
 #=================================================
-# REMOVE THE PHP-FPM CONFIGURATION
+# REMOVE PHP-FPM CONFIGURATION
 #=================================================
 
-ynh_remove_fpm_config	# Suppression de la configuration du pool php-fpm
+# Remove the dedicated php-fpm config
+ynh_remove_fpm_config
 
 #=================================================
 # SPECIFIC REMOVE
@@ -60,7 +65,7 @@ ynh_remove_fpm_config	# Suppression de la configuration du pool php-fpm
 # REMOVE THE PARENT DIR
 #=================================================
 
-# Vérifie si le dossier parent est vide. Ce qui signifie que toutes les webapp ont été désinstallées. Ainsi que le client ftp net2ftp.
+# Check if the parent dir is empty. Which means that all webapps have been removed.
 if [ -e "$parent_dir" ]
 then
 	if test -z "$(ls $parent_dir | head -n1)"
@@ -75,4 +80,5 @@ fi
 # REMOVE DEDICATED USER
 #=================================================
 
+# Delete dedicated system user
 ynh_system_user_delete $appname

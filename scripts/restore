@@ -48,17 +48,17 @@ ynh_maintenance_mode_ON
 #=================================================
 # STANDARD RESTORE STEPS
 #=================================================
-# RESTORE OF THE NGINX CONFIGURATION
+# RESTORE THE NGINX CONFIGURATION
 #=================================================
 
 ynh_restore_file "/etc/nginx/conf.d/$domain.d/$appname.conf"
 
 #=================================================
-# RESTORE OF THE MAIN DIR OF THE APP
+# RESTORE THE APP MAIN DIR
 #=================================================
 
 if test ! -d $parent_dir
-then	# Créer le dossier parent uniquement si il n'existe pas
+then
 	mkdir $parent_dir
 	# Set permissions
 	chmod 755 -R $parent_dir
@@ -66,7 +66,7 @@ fi
 ynh_restore_file "$final_path"
 
 #=================================================
-# RESTORE OF THE SQL BDD
+# RESTORE THE MYSQL DATABASE
 #=================================================
 
 if [ $sql -eq 1 ];
@@ -78,19 +78,21 @@ then
 fi
 
 #=================================================
-# RECREATE OF THE DEDICATED USER
+# RECREATE THE DEDICATED USER
 #=================================================
 
-ynh_system_user_create $appname	# Recreate the dedicated user, if not exist
+# Create the dedicated user (if not existing)
+ynh_system_user_create $appname
 
 #=================================================
-# SECURING FILES AND DIRECTORIES
+# RESTORE USER RIGHTS
 #=================================================
 
+# Restore permissions on app files
 chown -R $admin:$appname $final_path
 
 #=================================================
-# RESTORE OF THE PHP-FPM CONFIGURATION
+# RESTORE THE PHP-FPM CONFIGURATION
 #=================================================
 
 ynh_restore_file "/etc/php5/fpm/pool.d/$appname.conf"
