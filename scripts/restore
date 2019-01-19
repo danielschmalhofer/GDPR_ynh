@@ -94,7 +94,6 @@ chown -R $admin:$appname $final_path
 #=================================================
 
 ynh_restore_file "/etc/php5/fpm/pool.d/$appname.conf"
-ynh_restore_file "/etc/php5/fpm/conf.d/20-$appname.ini"
 
 #=================================================
 # GENERIC FINALISATION
@@ -102,8 +101,8 @@ ynh_restore_file "/etc/php5/fpm/conf.d/20-$appname.ini"
 # RELOAD NGINX AND PHP-FPM
 #=================================================
 
-ynh_system_reload --service_name=php5-fpm
-ynh_system_reload --service_name=nginx
+ynh_systemd_action --action=reload --service_name=php5-fpm
+ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

@@ -47,7 +47,6 @@ ynh_backup "/etc/nginx/conf.d/$domain.d/$appname.conf"
 #=================================================
 
 ynh_backup "/etc/php5/fpm/pool.d/$appname.conf"
-ynh_backup "/etc/php5/fpm/conf.d/20-$appname.ini"
 
 #=================================================
 # BACKUP OF THE SQL BDD

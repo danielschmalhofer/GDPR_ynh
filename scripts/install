@@ -45,8 +45,6 @@ fi
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
 
-# Check web path availability
-ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
@@ -144,11 +142,7 @@ ynh_replace_string "__USER__" "$appname" "$finalphpconf"
 
 chown root: "$finalphpconf"
 
-finalphpini="/etc/php5/fpm/conf.d/20-$appname.ini"
-cp ../conf/php-fpm.ini "$finalphpini"
-chown root: "$finalphpini"
-
-ynh_system_reload --service_name=php5-fpm
+ynh_systemd_action --action=reload --service_name=php5-fpm
 
 #=================================================
 # NGINX CONFIGURATION
@@ -181,7 +175,7 @@ chown -R $admin:$appname $final_path
 # RELOAD NGINX
 #=================================================
 
-ynh_system_reload --service_name=nginx
+ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # SEND A README FOR THE ADMIN
@@ -201,7 +195,7 @@ message="This app is simply a blank web app container. You have to put your own 
 $sql_infos
 Please put your files in this directory, $final_path
 
-You can find a standard nginx configuration in $finalnginxconf and a standard php config in $finalphpconf and $finalphpini
+You can find a standard nginx configuration in $finalnginxconf and a standard php config in $finalphpconf.
 
 If you facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/multi_webapp_ynh"
 
