@@ -30,27 +30,26 @@ sql=$(ynh_app_setting_get $app sql)
 #=================================================
 # STANDARD BACKUP STEPS
 #=================================================
-# BACKUP OF THE MAIN DIR OF THE APP
+# BACKUP THE APP MAIN DIR
 #=================================================
 
 CHECK_SIZE "$final_path"
 ynh_backup "$final_path"
 
 #=================================================
-# BACKUP OF THE NGINX CONFIGURATION
+# BACKUP NGINX CONFIGURATION
 #=================================================
 
 ynh_backup "/etc/nginx/conf.d/$domain.d/$appname.conf"
 
 #=================================================
-# BACKUP OF THE PHP-FPM CONFIGURATION
+# BACKUP PHP-FPM CONFIGURATION
 #=================================================
 
 ynh_backup "/etc/php5/fpm/pool.d/$appname.conf"
-ynh_backup "/etc/php5/fpm/conf.d/20-$appname.ini"
 
 #=================================================
-# BACKUP OF THE SQL BDD
+# BACKUP THE MYSQL DATABASE
 #=================================================
 
 if [ $sql -eq 1 ];

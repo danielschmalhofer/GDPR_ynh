@@ -13,7 +13,8 @@ source /usr/share/yunohost/helpers
 # MANAGE FAILURE OF THE SCRIPT
 #=================================================
 
-ynh_abort_if_errors	# Active trap pour arrêter le script si une erreur est détectée.
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
@@ -35,18 +36,12 @@ parent_dir=/var/www/webapp_$admin
 directory="${domain//-/_}_$(echo $path_url | cut -d '/' -f 2)"
 appname=webapp_$directory
 final_path=$parent_dir/$directory
-# Pour cette application, app correspond au label, comme d'habitude. Mais pas au nom de l'application. appname contient le nom de l'application, dérivé du path.
-# Vérifie que le dossier de destination n'est pas déjà utilisé.
-if [ -e "$final_path" ]
-then
-	ynh_die "This path already contains a folder"
-fi
+# For this app; $app is the label, as usual, but $appname will contains the real name of the app, from the path.
+test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
 
-# Check web path availability
-ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
@@ -69,6 +64,7 @@ ynh_app_setting_set $app sql $sql
 # SETUP SSOWAT
 #=================================================
 
+# Make app public if necessary
 if [ $is_public -eq 1 ]
 then
 	ynh_app_setting_set $app skipped_uris "/"
@@ -80,23 +76,24 @@ fi
 # CREATE FINAL PATH
 #=================================================
 
-# Créer le dossier parent des webapp pour l'utilisateur
+# Create parent directory for user's webapps
 if test ! -d $parent_dir
-then	# Créer le dossier parent uniquement si il n'existe pas
+then
 	mkdir $parent_dir
 	# Set permissions
 	chmod 755 -R $parent_dir
 	chown -R root: $parent_dir
 else
-	ynh_print_info "Création du dossier $parent_dir ignorée, le dossier existe déjà." >&2
+	ynh_print_info "The directory $parent_dir already exist, do not recreate it." >&2
 fi
 
 # Copy files to the right place
 mkdir -p $final_path
 cp ../sources/index.html $final_path/
-# Vérifie si pure-ftpd est déjà installé
+# Check if pure-ftpd is already installed
 if test -f /usr/sbin/pure-ftpd-ldap
-then	# Si oui, vérifie si net2ftp est également installé.
+then
+	# If so, check if net2ftp is installed as well.
 	if test -d $parent_dir/netftp
 	then
 		# Change admin ID in configurations
@@ -105,12 +102,13 @@ then	# Si oui, vérifie si net2ftp est également installé.
 		ynh_replace_string "__HOST__" "$domain" ../sources/index_ftp.html
 		ynh_replace_string "__NET2FTP__" "$netftp_path" ../sources/index_ftp.html
 		ynh_replace_string "__PORT__" "$(cat /etc/pure-ftpd/conf/Bind)" ../sources/index_ftp.html
-		cp ../sources/index_ftp.html $final_path/index.html	# Remplace l'index.html par celui intégrant les informations ftp
+		# Replace index.html by the index with ftp information
+		cp ../sources/index_ftp.html $final_path/index.html
 	fi
 fi
 
 #=================================================
-# CREATE A SQL BDD
+# CREATE A MYSQL DATABASE
 #=================================================
 
 if [ $sql -eq 1 ]
@@ -128,13 +126,14 @@ fi
 # CREATE DEDICATED USER
 #=================================================
 
-ynh_system_user_create $appname	# Créer un utilisateur système dédié à l'app
+# Create a dedicated system user
+ynh_system_user_create $appname
 
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
 
-# En raison de l'usage de $appname, il n'est pas possible d'utiliser ynh_fpm_config
+# Because we're using $appname, we can't use ynh_fpm_config
 finalphpconf="/etc/php5/fpm/pool.d/$appname.conf"
 cp ../conf/php-fpm.conf "$finalphpconf"
 
@@ -144,17 +143,13 @@ ynh_replace_string "__USER__" "$appname" "$finalphpconf"
 
 chown root: "$finalphpconf"
 
-finalphpini="/etc/php5/fpm/conf.d/20-$appname.ini"
-cp ../conf/php-fpm.ini "$finalphpini"
-chown root: "$finalphpini"
-
-ynh_system_reload --service_name=php5-fpm
+ynh_systemd_action --action=reload --service_name=php5-fpm
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 
-# En raison de l'usage de $appname, il n'est pas possible d'utiliser ynh_nginx_config
+# Because we're using $appname, we can't use ynh_nginx_config
 
 finalnginxconf="/etc/nginx/conf.d/$domain.d/$appname.conf"
 cp ../conf/nginx.conf "$finalnginxconf"
@@ -174,6 +169,7 @@ ynh_replace_string "__APPNAME__" "$appname" "$finalnginxconf"
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
+# Set permissions to app files
 chmod 775 -R $final_path
 chown -R $admin:$appname $final_path
 
@@ -181,16 +177,19 @@ chown -R $admin:$appname $final_path
 # RELOAD NGINX
 #=================================================
 
-ynh_system_reload --service_name=nginx
+ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # SEND A README FOR THE ADMIN
 #=================================================
 
+# Get main domain and buid the url of the admin panel of the app.
+admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
+
 if [ "$sql" != "0" ]
 then
 	sql_infos="
-You ask for an database, please find here the informations about this SQL database.
+You ask for a database, please find here the information about this SQL database.
 $(cat "$final_path/db_info.txt")
 "
 else
@@ -201,8 +200,11 @@ message="This app is simply a blank web app container. You have to put your own 
 $sql_infos
 Please put your files in this directory, $final_path
 
-You can find a standard nginx configuration in $finalnginxconf and a standard php config in $finalphpconf and $finalphpini
+You can find a standard nginx configuration in $finalnginxconf and a standard php config in $finalphpconf.
 
-If you facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/multi_webapp_ynh"
+You can configure this app easily by using the experimental config-panel feature: $admin_panel/config-panel.
+You can also find some specific actions for this app by using the experimental action feature: $admin_panel/actions.
 
-ynh_send_readme_to_admin --app_message="$message" --recipients="$admin"
+If you're facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/multi_webapp_ynh"
+
+ynh_send_readme_to_admin --app_message="$message" --recipients="$admin" --type="install"

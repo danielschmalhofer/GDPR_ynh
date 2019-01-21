@@ -33,9 +33,9 @@ Aucune démo pour cette application.
 
 #### Architectures supportées.
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/multi_webapp%20(Community)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/multi_webapp%20(Community)/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/jenkins/job/multi_webapp%20(Community)%20(%7EARM%7E)/badge/icon)](https://ci-apps-arm.yunohost.org/jenkins/job/multi_webapp%20(Community)%20(%7EARM%7E)/)
-* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/jenkins/job/multi_webapp%20(Community)/badge/icon)](https://ci-stretch.nohost.me/jenkins/job/multi_webapp%20(Community)/)
+* x86-64b - [![](https://ci-apps.yunohost.org/ci/logs/multi_webapp%20%28Community%29.svg)](https://ci-apps.yunohost.org/ci/apps/multi_webapp/)
+* ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/multi_webapp%20%28Community%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/multi_webapp/)
+* Jessie x86-64b - [![](https://ci-stretch.nohost.me/ci/logs/multi_webapp%20%28Community%29.svg)](https://ci-stretch.nohost.me/ci/apps/multi_webapp/)
 
 ## Limitations
 
@@ -59,7 +59,7 @@ Merci de faire vos pull request sur la [branche testing](https://github.com/Yuno
 
 Pour tester la branche testing, merci de procéder ainsi.
 ```
-sudo yunohost app install https://github.com/YunoHost-Apps/multi_webapp_ynh/tree/testing --verbose
+sudo yunohost app install https://github.com/YunoHost-Apps/multi_webapp_ynh/tree/testing --debug
 ou
-sudo yunohost app upgrade multi_webapp -u https://github.com/YunoHost-Apps/multi_webapp_ynh/tree/testing --verbose
+sudo yunohost app upgrade multi_webapp -u https://github.com/YunoHost-Apps/multi_webapp_ynh/tree/testing --debug
 ```

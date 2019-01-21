@@ -6,7 +6,7 @@
 		"en": "Empty App without FTP access",
 		"fr": "App vide sans accès FTP"
 	},
-	"version": "1.0~ynh3",
+	"version": "1.0~ynh4",
 	"url": "https://github.com/YunoHost-Apps/multi_webapp_ynh",
 	"license": "GPL-3.0",
 	"maintainer": {
@@ -14,7 +14,7 @@
 		"email": "maniackc_dev@crudelis.fr"
 	},
 	"requirements": {
-		"yunohost": ">= 2.7.14"
+		"yunohost": ">= 3.3.3"
 	},
 	"multi_instance": true,
 	"services": [
