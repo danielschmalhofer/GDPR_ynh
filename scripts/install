@@ -144,7 +144,8 @@ ynh_system_user_create $appname
 ynh_script_progression --message="Configure php-fpm"
 
 # Because we're using $appname, we can't use ynh_fpm_config
-finalphpconf="/etc/php5/fpm/pool.d/$appname.conf"
+finalphpconf="/etc/php/7.0/fpm/pool.d/$appname.conf"
+
 cp ../conf/php-fpm.conf "$finalphpconf"
 
 ynh_replace_string "__NAMETOCHANGE__" "$appname" "$finalphpconf"

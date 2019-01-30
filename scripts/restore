@@ -100,7 +100,7 @@ chown -R $admin:$appname $final_path
 # RESTORE THE PHP-FPM CONFIGURATION
 #=================================================
 
-ynh_restore_file "/etc/php5/fpm/pool.d/$appname.conf"
+ynh_restore_file "/etc/php/7.0/fpm/pool.d/$appname.conf"
 
 #=================================================
 # GENERIC FINALISATION
@@ -109,7 +109,7 @@ ynh_restore_file "/etc/php5/fpm/pool.d/$appname.conf"
 #=================================================
 ynh_script_progression --message="Reload nginx and php-fpm"
 
-ynh_systemd_action --action=reload --service_name=php5-fpm
+ynh_systemd_action --action=reload --service_name=php7.0-fpm
 ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
