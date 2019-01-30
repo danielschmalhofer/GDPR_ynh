@@ -12,6 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_script_progression --message="Load settings" --weight=3
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -31,6 +32,7 @@ parent_dir=$(ynh_app_setting_get $app parent_dir)
 
 if [ "$sql" -eq "1" ];
 then
+	ynh_script_progression --message="Remove the mysql database"
 	db_name=$(ynh_app_setting_get $app db_name)
 	# Remove a database if it exists, along with the associated user
 	ynh_mysql_remove_db $db_name $db_name
@@ -39,6 +41,7 @@ fi
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
+ynh_script_progression --message="Remove app main directory"
 
 # Remove the app directory securely
 ynh_secure_remove "$final_path"
@@ -46,6 +49,7 @@ ynh_secure_remove "$final_path"
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Remove nginx configuration" --weight=2
 
 # Use appname for FPM and nginx
 app=$appname
@@ -55,6 +59,7 @@ ynh_remove_nginx_config
 #=================================================
 # REMOVE PHP-FPM CONFIGURATION
 #=================================================
+ynh_script_progression --message="Remove php-fpm configuration"
 
 # Remove the dedicated php-fpm config
 ynh_remove_fpm_config
@@ -79,6 +84,13 @@ fi
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
+ynh_script_progression --message="Remove the dedicated user" --weight=2
 
 # Delete dedicated system user
 ynh_system_user_delete $appname
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Deletion completed" --last

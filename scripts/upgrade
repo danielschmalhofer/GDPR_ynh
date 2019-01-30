@@ -12,6 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_script_progression --message="Load settings" --weight=2
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -28,6 +29,7 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
+ynh_script_progression --message="Ensure downward compatibility" --weight=2
 
 if test -z "$appname"
 then
@@ -66,6 +68,7 @@ fi
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
+ynh_script_progression --message="Backup the app before upgrading" --weight=4
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -79,9 +82,16 @@ ynh_abort_if_errors
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_script_progression --message="Reconfigure SSOwat"
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
 	ynh_app_setting_set $app skipped_uris "/"
 fi
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Upgrade completed" --last
