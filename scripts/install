@@ -61,6 +61,8 @@ ynh_app_setting_set $app final_path $final_path
 ynh_app_setting_set $app parent_dir $parent_dir
 ynh_app_setting_set $app sql $sql
 
+ynh_app_setting_set $app admin_mail_html "1"
+
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
@@ -206,18 +208,18 @@ else
 	sql_infos=""
 fi
 
-message="This app is simply a blank web app container. You have to put your own app inside.
+echo "This app is simply a blank web app container. You have to put your own app inside.
 $sql_infos
 Please put your files in this directory, $final_path
 
 You can find a standard nginx configuration in $finalnginxconf and a standard php config in $finalphpconf.
 
-You can configure this app easily by using the experimental config-panel feature: $admin_panel/config-panel.
-You can also find some specific actions for this app by using the experimental action feature: $admin_panel/actions.
+You can configure this app easily by using the experimental __URL_TAG1__config-panel feature__URL_TAG2__$admin_panel/config-panel__URL_TAG3__.
+You can also find some specific actions for this app by using the experimental __URL_TAG1__action feature__URL_TAG2__$admin_panel/actions__URL_TAG3__.
 
-If you're facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/multi_webapp_ynh"
+If you're facing an issue or want to improve this app, please open a new issue in this __URL_TAG1__project__URL_TAG2__https://github.com/YunoHost-Apps/multi_webapp_ynh__URL_TAG3__." > mail_to_send
 
-ynh_send_readme_to_admin --app_message="$message" --recipients="$admin" --type="install"
+ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type="install"
 
 #=================================================
 # END OF SCRIPT
