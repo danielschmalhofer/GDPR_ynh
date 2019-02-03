@@ -31,6 +31,11 @@ old_is_public="$(ynh_app_setting_get $app is_public)"
 old_is_public=$(bool_to_true_false $old_is_public)
 is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
 
+# Type of admin mail configuration
+old_admin_mail_html="$(ynh_app_setting_get $app admin_mail_html)"
+old_admin_mail_html=$(bool_to_true_false $old_admin_mail_html)
+admin_mail_html="${YNH_CONFIG_MAIN_GLOBAL_CONFIG_EMAIL_TYPE:-$old_admin_mail_html}"
+
 #=================================================
 # SHOW_CONFIG FUNCTION FOR 'SHOW' COMMAND
 #=================================================
@@ -40,6 +45,8 @@ show_config() {
 	# echo "YNH_CONFIG_${PANEL_ID}_${SECTION_ID}_${OPTION_ID}=value"
 
 	echo "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
+
+	echo "YNH_CONFIG_MAIN_GLOBAL_CONFIG_EMAIL_TYPE=$admin_mail_html"
 }
 
 #=================================================
@@ -54,6 +61,10 @@ apply_config() {
 	else
 		yunohost app action run $app public_private --args is_public=0
 	fi
+
+	# Set admin_mail_html
+	admin_mail_html=$(bool_to_01 $admin_mail_html)
+	ynh_app_setting_set $app admin_mail_html "$admin_mail_html"
 }
 
 #=================================================

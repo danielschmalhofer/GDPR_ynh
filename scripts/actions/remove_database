@@ -12,6 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
+ynh_script_progression --message="Retrieve arguments from the manifest"
 
 app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
 
@@ -35,9 +36,16 @@ fi
 #=================================================
 # REMOVE THE DATABASE
 #=================================================
+ynh_script_progression --message="Remove the database" --weight=9
 
 db_name=$(ynh_app_setting_get $app db_name)
 ynh_mysql_remove_db $db_name $db_name
 
 # Update the config of the app
 ynh_app_setting_set $app sql 0
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Execution completed" --last

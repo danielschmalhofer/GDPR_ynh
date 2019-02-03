@@ -12,6 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
+ynh_script_progression --message="Retrieve arguments from the manifest" --weight=2
 
 app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
 
@@ -32,6 +33,7 @@ final_path=$(ynh_app_setting_get $app final_path)
 #=================================================
 # REMOVE THE PREVIOUS DATABASE
 #=================================================
+ynh_script_progression --message="Remove the previous database" --weight=6
 
 if [ $sql -eq 1 ]
 then
@@ -41,6 +43,7 @@ fi
 #=================================================
 # CREATE A NEW DATABASE
 #=================================================
+ynh_script_progression --message="Create a new database" --weight=4
 
 db_name=$(ynh_sanitize_dbid $appname)
 # Reuse the previous password if existing
@@ -56,3 +59,9 @@ echo "DB_HOST= localhost" | tee -a "$final_path/db_info.txt"
 # Update the config of the app
 ynh_app_setting_set $app sql 1
 ynh_app_setting_set $app db_name $db_name
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Execution completed" --last

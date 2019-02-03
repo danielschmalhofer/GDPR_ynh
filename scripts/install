@@ -19,6 +19,7 @@ ynh_abort_if_errors
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
+ynh_script_progression --message="Retrieve arguments from the manifest"
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
@@ -31,6 +32,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THIS ARGS
 #=================================================
+ynh_script_progression --message="Check if the app can be installed"
 
 parent_dir=/var/www/webapp_$admin
 directory="${domain//-/_}_$(echo $path_url | cut -d '/' -f 2)"
@@ -48,6 +50,7 @@ ynh_webpath_register $app $domain $path_url
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
+ynh_script_progression --message="Store settings from manifest" --weight=3
 
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
@@ -58,11 +61,14 @@ ynh_app_setting_set $app final_path $final_path
 ynh_app_setting_set $app parent_dir $parent_dir
 ynh_app_setting_set $app sql $sql
 
+ynh_app_setting_set $app admin_mail_html "1"
+
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_script_progression --message="Setup SSOwat"
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
@@ -75,6 +81,7 @@ fi
 #=================================================
 # CREATE FINAL PATH
 #=================================================
+ynh_script_progression --message="Create final path"
 
 # Create parent directory for user's webapps
 if test ! -d $parent_dir
@@ -113,6 +120,7 @@ fi
 
 if [ $sql -eq 1 ]
 then
+	ynh_script_progression --message="Create a mysql database"
 	db_name=$(ynh_sanitize_dbid $appname)
 	ynh_app_setting_set $app db_name $db_name
 	ynh_mysql_setup_db $db_name $db_name
@@ -125,6 +133,7 @@ fi
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_script_progression --message="Create a dedicated user" --weight=3
 
 # Create a dedicated system user
 ynh_system_user_create $appname
@@ -132,9 +141,11 @@ ynh_system_user_create $appname
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
+ynh_script_progression --message="Configure php-fpm"
 
 # Because we're using $appname, we can't use ynh_fpm_config
-finalphpconf="/etc/php5/fpm/pool.d/$appname.conf"
+finalphpconf="/etc/php/7.0/fpm/pool.d/$appname.conf"
+
 cp ../conf/php-fpm.conf "$finalphpconf"
 
 ynh_replace_string "__NAMETOCHANGE__" "$appname" "$finalphpconf"
@@ -148,6 +159,7 @@ ynh_systemd_action --action=reload --service_name=php5-fpm
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Configure nginx"
 
 # Because we're using $appname, we can't use ynh_nginx_config
 
@@ -176,6 +188,7 @@ chown -R $admin:$appname $final_path
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_script_progression --message="Reload nginx" --weight=5
 
 ynh_systemd_action --action=reload --service_name=nginx
 
@@ -196,15 +209,21 @@ else
 	sql_infos=""
 fi
 
-message="This app is simply a blank web app container. You have to put your own app inside.
+echo "This app is simply a blank web app container. You have to put your own app inside.
 $sql_infos
 Please put your files in this directory, $final_path
 
 You can find a standard nginx configuration in $finalnginxconf and a standard php config in $finalphpconf.
 
-You can configure this app easily by using the experimental config-panel feature: $admin_panel/config-panel.
-You can also find some specific actions for this app by using the experimental action feature: $admin_panel/actions.
+You can configure this app easily by using the experimental __URL_TAG1__config-panel feature__URL_TAG2__$admin_panel/config-panel__URL_TAG3__.
+You can also find some specific actions for this app by using the experimental __URL_TAG1__action feature__URL_TAG2__$admin_panel/actions__URL_TAG3__.
 
-If you're facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/multi_webapp_ynh"
+If you're facing an issue or want to improve this app, please open a new issue in this __URL_TAG1__project__URL_TAG2__https://github.com/YunoHost-Apps/multi_webapp_ynh__URL_TAG3__." > mail_to_send
 
-ynh_send_readme_to_admin --app_message="$message" --recipients="$admin" --type="install"
+ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type="install"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Installation completed" --last
