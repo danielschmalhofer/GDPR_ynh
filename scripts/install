@@ -136,7 +136,8 @@ fi
 ynh_script_progression --message="Create a dedicated user" --weight=3
 
 # Create a dedicated system user
-ynh_system_user_create $appname
+username="${appname//[^a-Z]/_}"
+ynh_system_user_create $username
 
 #=================================================
 # PHP-FPM CONFIGURATION
@@ -150,7 +151,7 @@ cp ../conf/php-fpm.conf "$finalphpconf"
 
 ynh_replace_string "__NAMETOCHANGE__" "$appname" "$finalphpconf"
 ynh_replace_string "__FINALPATH__" "$final_path" "$finalphpconf"
-ynh_replace_string "__USER__" "$appname" "$finalphpconf"
+ynh_replace_string "__USER__" "$username" "$finalphpconf"
 
 chown root: "$finalphpconf"
 
@@ -183,7 +184,7 @@ ynh_replace_string "__APPNAME__" "$appname" "$finalnginxconf"
 
 # Set permissions to app files
 chmod 775 -R $final_path
-chown -R $admin:$appname $final_path
+chown -R $admin:$username $final_path
 
 #=================================================
 # RELOAD NGINX
