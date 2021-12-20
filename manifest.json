@@ -1,22 +1,19 @@
 {
-	"name": "Multi custom webapp",
-	"id": "multi_webapp",
+	"name": "GDPR App",
+	"id": "GDPR_App",
 	"packaging_format": 1,
 	"description": {
-		"en": "Empty App without FTP access",
-		"fr": "App vide sans accès FTP"
+		"en": "App that adds GDPR information to your instance",
+		"fr": "Application qui ajoute des informations RGPD à votre instance",
+    "de": "Diese App fügt ihrer Instanz DSGVO Informationen hinzu"
 	},
-	"version": "1.0~ynh5",
-	"url": "https://github.com/YunoHost-Apps/multi_webapp_ynh",
+	"version": "0.1",
+	"url": "https://github.com/danielschmalhofer/GDPR_ynh",
 	"license": "GPL-3.0",
 	"maintainer": {
-		"name": "",
-		"email": ""
+		"name": "Daniel Schmalhofer",
+		"email": "hallo@danielschmalhofer.net"
 	},
-	"previous_maintainers": [{
-		"name": "Maniack Crudelis",
-		"email": "maniackc_dev@crudelis.fr"
-	}],
 	"requirements": {
 		"yunohost": ">= 3.4"
 	},
@@ -48,31 +45,44 @@
 				"default": "/site"
 			},
 			{
-				"name": "admin",
-				"type": "user",
+				"name": "contact_info_line_1",
+				"type": "string",
 				"ask": {
-					"en": "Choose the YunoHost user",
-					"fr": "Choisissez l'utilisateur YunoHost associé"
+					"en": "First line of contact information:",
+          "de": "Erste Zeile der Kontaktinfos:",
+					"fr": "Coordonnées de la première ligne:"
 				},
-				"example": "johndoe"
+        "example": "Name / Nom"
+			},
+      {
+				"name": "contact_info_line_2",
+				"type": "string",
+				"ask": {
+					"en": "Second line of contact information:",
+          "de": "Zweite Zeile der Kontaktinfos:",
+					"fr": "Deuxième ligne de coordonnées:"
+				},
+        "example": "Street / Strasse / Rue"
+			},
+      {
+				"name": "contact_info_line_3",
+				"type": "string",
+				"ask": {
+					"en": "Third line of contact information:",
+          "de": "Dritte Zeile der Kontaktinfos:",
+					"fr": "Troisième ligne de coordonnées:"
+				},
+				"example": "Postcode and City / PLZ und Stadt / Code postal et ville"
 			},
 			{
-				"name": "sql",
-				"type": "boolean",
+				"name": "contact_info_line_4",
+				"type": "string",
 				"ask": {
-					"en": "Create a database?",
-					"fr": "Créer une base de données?"
+					"en": "Fourth line of contact information:",
+          "de": "Vierte Zeile der Kontaktinfos:",
+					"fr": "Quatrième ligne de coordonnées:"
 				},
-				"default": false
-			},
-			{
-				"name": "is_public",
-				"type": "boolean",
-				"ask": {
-					"en": "Is it a public website ?",
-					"fr": "Est-ce un site public ?"
-				},
-				"default": false
+				"example": "Country / Land / Pays"
 			}
 		]
 	}
